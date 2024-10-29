@@ -6,14 +6,20 @@ int main(){
     B15f& drv = B15F::getInstance();
     drv.setRegister(&DDRA, 0x01); //Bit 7-1 Eingabe, Bit 0 Ausgabe
     while(true){
-        //Ausgabe
-        std::cout << "Schreibe 0";
-        drv.setRegister(&PORTA, 0); // ungeschicktes Alternieren
-        std::cout << "Schreibe 1";
-        drv.setRegister(&PORTA, 1);
+       schreibe(drv);
+       lese(drv);
     }
 
     return 0;
+}
+
+void schreibe(B15F & drv){
+    std::cout << "Schreibe 0";
+    drv.setRegister(&PORTA, 0);
+}
+
+void lese(B15F & drv){
+    std::cout << ((int) drv.getRegister(&PINA)) << endl; 
 }
 
 /* Asynchrones Lesen von PortA anderes PC mit seinem Board

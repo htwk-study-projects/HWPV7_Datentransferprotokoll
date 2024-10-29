@@ -1,38 +1,28 @@
 #include <iostream>
 #include <b15f/b15f.h>
 
-// Übertragen von abwechselnd 0 und 1
-int main(){
-    B15f& drv = B15F::getInstance();
-    drv.setRegister(&DDRA, 0x01); //Bit 7-1 Eingabe, Bit 0 Ausgabe
-    int counter = 0;
-    while(true){
-       schreibe(drv);
-       lese(drv);
-       i++;
-    }
+//auf board scshreiben und von board direkt wieder lesen klappt
+//von arudino lesen klappt noch nicht
 
-    return 0;
-}
-
-void schreibe(B15F & drv, int i){
-    std::cout << "Schreibe 0";
-    drv.setRegister(&PORTA, (i % 2));
+void schreibe(B15F & drv, char c){
+    std::cout << "Schreibe: " << c << std::endl;
+    drv.setRegister(&PORTA, c);
 }
 
 void lese(B15F & drv){
-    std::cout << ((int) drv.getRegister(&PINA)) << endl; 
+    std::cout << "Lese: " << ((char) drv.getRegister(&PINA)) << std::endl; 
 }
 
-/* Asynchrones Lesen von PortA anderes PC mit seinem Board
 int main(){
-    B15f& drv = B15F::getInstance();
-    drv.setRegister(&DDRA, 0x00); //Bit 7-1 Eingabe, Bit 0 Ausgabe
+    B15F& drv = B15F::getInstance();
+    drv.setRegister(&DDRA, 0xff); //bunutzt gerade noch alle 8 bits
+    char c = 'a';
     while(true){
-    //Lesen
-        std::cout << ((int) drv.getRegister(&PINA) << endl; 
-        drv.delay_ms(10);
+       schreibe(drv, c);
+       drv.delay_ms(100);
+       lese(drv);
+       c++;
     }
 
     return 0;
-}*/
+}

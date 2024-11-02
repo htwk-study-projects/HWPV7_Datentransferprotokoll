@@ -1,4 +1,3 @@
-
 /*
 CRC-Summe = (Daten-Block * 2^Grad(Generatorpolynom)) mod Generatorpolynom
 CRC-Länge enspricht Grad des Generatorpolynom
@@ -51,13 +50,12 @@ XOR        10011
 
 class CRC_Sum {
 private:
-    static const std::bitset<5> generator; // Generatorpolynom (x^4 + x + 1 => 10011)
+    static const std::bitset<5> generator;
 
-    // Funktion für die XOR-Operation zwischen zwei bitsets
-    std::bitset<12> xorBitsets(const std::bitset<12>& a, const std::bitset<5>& b, int shift) {
-        std::bitset<12> result = a;
-        for (int i = 0; i < b.size(); i++) {
-            if (b.test(i)) {
+    std::bitset<12> xorBitsets(const std::bitset<12>& data, const std::bitset<5>& generatorPolynom, int shift) {
+        std::bitset<12> result = data;
+        for (int i = 0; i < generatorPolynom.size(); i++) {
+            if (generatorPolynom.test(i)) {
                 result.set(i + shift, !result.test(i + shift));
             }
         }
@@ -65,50 +63,39 @@ private:
     }
 
 public:
-    // Funktion zur Berechnung der CRC-Prüfziffer
+
     std::bitset<4> calculateCRC(const std::bitset<8>& data) {
         std::bitset<12> extendedData = std::bitset<12>(data.to_ulong() << 4); // D * 2^4
         std::bitset<12> remainder = extendedData;
-
-        // Durchführung der Division
         for (int i = 11; i >= 4; i--) {
             if (remainder.test(i)) {
                 remainder = xorBitsets(remainder, generator, i - 4);
             }
         }
-
-        // Rückgabe des CRC-Rests als 4-Bit-Wert
         return std::bitset<4>(remainder.to_ulong());
     }
 
-    // Funktion zum Erstellen des Datenblocks mit CRC
     std::bitset<12> createDataBlockWithCRC(const std::bitset<8>& data) {
         std::bitset<4> crc = calculateCRC(data);
 
-        // Kombinieren der Daten und CRC
-        std::bitset<12> dataWithCRC = (data.to_ulong() << 4); // Daten um 4 Bits nach links schieben
-        dataWithCRC |= crc.to_ulong(); // CRC an die letzten 4 Bits anfügen
+        std::bitset<12> dataWithCRC = (data.to_ulong() << 4);
+        dataWithCRC |= crc.to_ulong();
 
-        return dataWithCRC; // Rückgabe des kombinierten Datenblocks mit CRC
+        return dataWithCRC;
     }
 
-
-    // Funktion zur Überprüfung des Datenblocks
     bool verifyDataBlock(const std::bitset<12>& dataWithCRC) {
         std::bitset<12> remainder = dataWithCRC;
 
-        // Durchführung der Division
         for (int i = 11; i >= 4; i--) {
             if (remainder.test(i)) {
                 remainder = xorBitsets(remainder, generator, i - 4);
             }
         }
 
-        // Überprüfung, ob der Rest null ist
         return remainder.none(); // true, wenn keine Bits gesetzt sind
     }
 
-    // Funktion zur Anzeige der Bits in einem bitset
     template <std::size_t N>
     void displayBits(const std::bitset<N>& bits) {
     for (int i = bits.size() - 1; i >= 0; i--) {

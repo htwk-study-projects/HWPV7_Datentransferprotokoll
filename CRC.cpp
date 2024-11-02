@@ -48,12 +48,13 @@ XOR        10011
 #include <string>
 #include <bitset>
 
+template <std::size_t DataSize, std::size_t GeneratorSize, std::size_t CRCSize>
 class CRC_Sum {
 private:
-    static const std::bitset<5> generator;
+    static const std::bitset<GeneratorSize> generator;
 
-    std::bitset<12> xorBitsets(const std::bitset<12>& data, const std::bitset<5>& generatorPolynom, int shift) {
-        std::bitset<12> result = data;
+    std::bitset<DataSize + CRCSize> xorBitsets(const std::bitset<DataSize + CRCSize>& data, const std::bitset<GeneratorSize>& generatorPolynom, int shift) {
+        std::bitset<DataSize + CRCSize> result = data;
         for (int i = 0; i < generatorPolynom.size(); i++) {
             if (generatorPolynom.test(i)) {
                 result.set(i + shift, !result.test(i + shift));
@@ -64,30 +65,30 @@ private:
 
 public:
 
-    std::bitset<4> calculateCRC(const std::bitset<8>& data) {
-        std::bitset<12> extendedData = std::bitset<12>(data.to_ulong() << 4); // D * 2^4
-        std::bitset<12> remainder = extendedData;
-        for (int i = 11; i >= 4; i--) {
+    std::bitset<CRCSize> calculateCRC(const std::bitset<DataSize>& data) {
+        std::bitset<DataSize + CRCSize> extendedData = data.to_ulong() << CRCSize;
+        std::bitset<DataSize + CRCSize> remainder = extendedData;
+        for (int i = DataSize + CRCSize -1 ; i >= GeneratorSize - 1; i--) {
             if (remainder.test(i)) {
-                remainder = xorBitsets(remainder, generator, i - 4);
+                remainder = xorBitsets(remainder, generator, i - (GeneratorSize - 1));
             }
         }
-        return std::bitset<4>(remainder.to_ulong());
+        return std::bitset<CRCSize>(remainder.to_ulong());
     }
 
-    std::bitset<12> createDataBlockWithCRC(const std::bitset<8>& data) {
-        std::bitset<4> crc = calculateCRC(data);
+    std::bitset<DataSize + CRCSize> createDataBlockWithCRC(const std::bitset<DataSize>& data) {
+        std::bitset<CRCSize> crc = calculateCRC(data);
 
-        std::bitset<12> dataWithCRC = (data.to_ulong() << 4);
+        std::bitset<DataSize + CRCSize> dataWithCRC = (data.to_ulong() << (CRCSize));
         dataWithCRC |= crc.to_ulong();
 
         return dataWithCRC;
     }
 
-    bool verifyDataBlock(const std::bitset<12>& dataWithCRC) {
-        std::bitset<12> remainder = dataWithCRC;
+    bool verifyDataBlock(const std::bitset<DataSize + CRCSize>& dataWithCRC) {
+        std::bitset<DataSize + CRCSize> remainder = dataWithCRC;
 
-        for (int i = 11; i >= 4; i--) {
+        for (int i = DataSize + CRCSize -1 ; i >= GeneratorSize - 1; i--) {
             if (remainder.test(i)) {
                 remainder = xorBitsets(remainder, generator, i - 4);
             }
@@ -106,20 +107,21 @@ public:
 };
 
 // Definition des Generatorpolynoms (10011)
-const std::bitset<5> CRC_Sum::generator = 0b10011;
+template<>
+const std::bitset<17> CRC_Sum<128, 17, 16>::generator = 0x11021; // 0b10001000000100001 in hex
 
 int main() {
-    CRC_Sum crcCalculator;
+    CRC_Sum<128, 17, 16> crcCalculator;
     
-    std::bitset<8> data("10111000"); // Beispiel-Daten
+    std::bitset<128> data("1100101011110001001110000000000000000000000000000000000000000000"); // Beispiel-Daten
     std::cout << "Original Data: ";
     crcCalculator.displayBits(data);
 
-    std::bitset<4> crc = crcCalculator.calculateCRC(data);
+    std::bitset<16> crc = crcCalculator.calculateCRC(data);
     std::cout << "CRC: ";
     crcCalculator.displayBits(crc);
 
-    std::bitset<12> dataWithCRC = crcCalculator.createDataBlockWithCRC(data);
+    std::bitset<144> dataWithCRC = crcCalculator.createDataBlockWithCRC(data);
     std::cout << "Data Block with CRC: ";
     crcCalculator.displayBits(dataWithCRC);
 

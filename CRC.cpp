@@ -66,21 +66,24 @@ private:
 public:
 
     std::bitset<CRCSize> calculateCRC(const std::bitset<DataSize>& data) {
-        std::bitset<DataSize + CRCSize> extendedData = data.to_ulong() << CRCSize;
+        std::bitset<DataSize + CRCSize> extendedData = data.to_ullong() << CRCSize;
         std::bitset<DataSize + CRCSize> remainder = extendedData;
         for (int i = DataSize + CRCSize -1 ; i >= GeneratorSize - 1; i--) {
             if (remainder.test(i)) {
                 remainder = xorBitsets(remainder, generator, i - (GeneratorSize - 1));
             }
         }
-        return std::bitset<CRCSize>(remainder.to_ulong());
+        return std::bitset<CRCSize>(remainder.to_ullong());
     }
 
     std::bitset<DataSize + CRCSize> createDataBlockWithCRC(const std::bitset<DataSize>& data) {
         std::bitset<CRCSize> crc = calculateCRC(data);
 
-        std::bitset<DataSize + CRCSize> dataWithCRC = (data.to_ulong() << (CRCSize));
-        dataWithCRC |= crc.to_ulong();
+        std::cout << "Original-Data: "; displayBits(data);
+        std::bitset<DataSize + CRCSize> dataWithCRC = data.to_ullong();
+        dataWithCRC <<= CRCSize;
+        std::cout << "Original_Data: "; displayBits(dataWithCRC);
+        dataWithCRC |= crc.to_ullong();
 
         return dataWithCRC;
     }
@@ -88,9 +91,9 @@ public:
     bool verifyDataBlock(const std::bitset<DataSize + CRCSize>& dataWithCRC) {
         std::bitset<DataSize + CRCSize> remainder = dataWithCRC;
 
-        for (int i = DataSize + CRCSize -1 ; i >= GeneratorSize - 1; i--) {
+        for (int i = DataSize + CRCSize -1 ; i >= GeneratorSize-1; i--) {
             if (remainder.test(i)) {
-                remainder = xorBitsets(remainder, generator, i - 4);
+                remainder = xorBitsets(remainder, generator, i - (GeneratorSize - 1));
             }
         }
 
@@ -106,23 +109,27 @@ public:
 }
 };
 
-// Definition des Generatorpolynoms (10011)
+//funktioniert nur bis 32 Bit Datenblock
+const u_long d = 32;
+const u_long g = 17;
+const u_long c = 16;
+
 template<>
-const std::bitset<17> CRC_Sum<128, 17, 16>::generator = 0x11021; // 0b10001000000100001 in hex
+const std::bitset<g> CRC_Sum<d, g, c>::generator = 0b10001000000100001; //CRC-CCITT (CRC-16)
 
 int main() {
-    CRC_Sum<128, 17, 16> crcCalculator;
+    CRC_Sum<d, g, c> crcCalculator;
     
-    std::bitset<128> data("1100101011110001001110000000000000000000000000000000000000000000"); // Beispiel-Daten
+    std::bitset<d> data("1011100110111001101110011011100110111001101110011011100110111001"); // Beispiel-Daten
     std::cout << "Original Data: ";
     crcCalculator.displayBits(data);
 
-    std::bitset<16> crc = crcCalculator.calculateCRC(data);
+    std::bitset<c> crc = crcCalculator.calculateCRC(data);
     std::cout << "CRC: ";
     crcCalculator.displayBits(crc);
 
-    std::bitset<144> dataWithCRC = crcCalculator.createDataBlockWithCRC(data);
-    std::cout << "Data Block with CRC: ";
+    std::bitset<d + c> dataWithCRC = crcCalculator.createDataBlockWithCRC(data);
+    std::cout << "OriginalCData: ";
     crcCalculator.displayBits(dataWithCRC);
 
     bool isValid = crcCalculator.verifyDataBlock(dataWithCRC);

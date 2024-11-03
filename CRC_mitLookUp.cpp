@@ -10,7 +10,7 @@ private:
     static bool isInitialized;
 
     static void initializeCRCTable() {
-        uint16_t polynomial = generator.to_ulong(); // Holen des Generatorpolynoms als ganzzahligen Wert
+        uint16_t polynomial = generator.to_ullong(); // Holen des Generatorpolynoms als ganzzahligen Wert
         for (int i = 0; i < 256; i++) {
             uint16_t crc = i;
             for (int j = 0; j < 8; j++) {
@@ -37,7 +37,7 @@ public:
 
         // Iteration durch die Daten in Bytes
         for (int i = 0; i < DataSize; i += 8) {
-            uint8_t byte = (data >> (DataSize - 8 - i)).to_ulong() & 0xFF; // Nächstes Byte
+            uint8_t byte = (data >> (DataSize - 8 - i)).to_ullong() & 0xFF; // Nächstes Byte
             crc = (crc >> 8) ^ crcTable[(crc ^ byte) & 0xFF]; // Lookup und Aktualisierung des CRC
         }
 
@@ -46,7 +46,7 @@ public:
 
     std::bitset<DataSize + CRCSize> createDataBlockWithCRC(const std::bitset<DataSize>& data) {
         std::bitset<CRCSize> crc = calculateCRC(data);
-        std::bitset<DataSize + CRCSize> dataWithCRC = (data.to_ulong() << CRCSize) | crc.to_ulong();
+        std::bitset<DataSize + CRCSize> dataWithCRC = (data.to_ullong() << CRCSize) | crc.to_ullong();
         return dataWithCRC;
     }
 
@@ -55,8 +55,8 @@ public:
 
         // Iteration durch die Daten in Bytes
         for (int i = 0; i < DataSize + CRCSize; i += 8) {
-            uint8_t byte = (dataWithCRC >> (DataSize + CRCSize - 8 - i)).to_ulong() & 0xFF; // Nächstes Byte
-            crc = (crc >> 8) ^ crcTable[(crc ^ byte) & 0xFF]; // Lookup und Aktualisierung des CRC
+            uint8_t byte = (dataWithCRC >> (DataSize + CRCSize - 8 - i)).to_ullong() & 0xFF; 
+            crc = (crc >> 8) ^ crcTable[(crc ^ byte) & 0xFF]; 
         }
 
         return crc == 0; // Rückgabe, ob kein Fehler aufgetreten ist
@@ -97,7 +97,8 @@ int main() {
     std::bitset<144> dataWithCRC = crcCalculator.createDataBlockWithCRC(data);
     std::cout << "Data Block with CRC: ";
     crcCalculator.displayBits(dataWithCRC);
-
+//0001110100110110
+//0010001011001110
     bool isValid = crcCalculator.verifyDataBlock(dataWithCRC);
     std::cout << "Data Block Verification: " << (isValid ? "No Errors" : "Errors Detected") << std::endl;
 

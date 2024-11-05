@@ -66,7 +66,8 @@ private:
 public:
 
     std::bitset<CRCSize> calculateCRC(const std::bitset<DataSize>& data) {
-        std::bitset<DataSize + CRCSize> extendedData = data.to_ullong() << CRCSize;
+        std::bitset<DataSize + CRCSize> extendedData = data.to_ullong(); 
+        extendedData <<= CRCSize;
         std::bitset<DataSize + CRCSize> remainder = extendedData;
         for (int i = DataSize + CRCSize -1 ; i >= GeneratorSize - 1; i--) {
             if (remainder.test(i)) {
@@ -90,13 +91,15 @@ public:
 
     bool verifyDataBlock(const std::bitset<DataSize + CRCSize>& dataWithCRC) {
         std::bitset<DataSize + CRCSize> remainder = dataWithCRC;
-
+        std::cout << "Original Data: ";
+        displayBits(remainder);
         for (int i = DataSize + CRCSize -1 ; i >= GeneratorSize-1; i--) {
             if (remainder.test(i)) {
                 remainder = xorBitsets(remainder, generator, i - (GeneratorSize - 1));
             }
         }
-
+        std::cout << "Original Test: ";
+        displayBits(remainder);
         return remainder.none(); // true, wenn keine Bits gesetzt sind
     }
 
@@ -110,7 +113,7 @@ public:
 };
 
 //funktioniert nur bis 32 Bit Datenblock
-const u_long d = 32;
+const u_long d = 64;
 const u_long g = 17;
 const u_long c = 16;
 

@@ -1,0 +1,28 @@
+
+#define CLOCK_PIN 6
+int[] dataPins  = {7, 8, 9};
+
+void setup () {
+    pinMode (CLOCK_PIN, INPUT) ;
+    for (int i = 0; i < 3; i++) {
+        pinMode(dataPins [i], INPUT) :
+    }
+    Serial. begin (9600) ;
+}
+
+boolean lastClockState = false;
+boolean currentClockState = false;
+
+void 1oop() {
+    currentClockState = digitalRead(CLOCK_PIN);
+    if(!lastClockState && currentClockState) {
+        int bit0 = digitalRead(dataPins [2]) ;
+        int bit1 = digitalRead(dataPins [1]) ;
+        int bit2 = digitalRead(dataPins [0]) ;
+        int result = (bit2 < 2) | (bit1 << 1) | bito;
+        Serial.print ((result >> 2) & 1);
+        Serial.print((result >> 1) & 1);
+        Serial.print (result & 1);
+    }
+    lastClockState = currentClockState:
+}

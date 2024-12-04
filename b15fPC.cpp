@@ -2,26 +2,32 @@
 #include <b15f/b15f.h>
 #include <map>
 #include <vector>
+
 #include <thread>
 #include <mutex>
 #include <condition_variable>
-#include <bitset>
-#include "DataBlock.cpp"  // Externe Datei für DataBlock
+#include <atomic>
+
+#include "DataBlock.cpp"
+#include "CRC.cpp"
 
 std::map<u_int16_t, DataBlock> outputBuffer;
+std::deque<uint16_t> blockNumbersToSend;
+
+std::atomic<bool> isReading{true};
 std::mutex mtx;
 std::condition_variable cv;
 
 void writeToB15(B15F& drv, int data);
 void sendData(B15F& drv, DataBlock& block);
 void readFromB15(B15F& drv);
-
-void DataBlockCreating();
+void DataBlockCreating(CRC & crc);
 void DataWriting(B15F& drv);
 
 int main() {
     B15F& drv = B15F::getInstance();
     drv.setRegister(&DDRA, 0x0f);
+    CRC CRC_Instance = CRC();
 
     std::thread DataBlockCreater(DataBlockCreating);
     std::thread DataWriter(DataWriting, std::ref(drv));
@@ -33,21 +39,45 @@ int main() {
     std::cout << std::endl;
 }
 
-void DataBlockCreating() {
-    while(std:cin){
-        std::vector<char> data;
-
-        
+void DataBlockCreating(CRC & crc) {
+    std::vector<char> dataBuffer;
+    char byte;
+    while (std::cin.get(byte)) {
+        if (byte == static_cast<char>(ControlCharacter::START) ||
+            byte == static_cast<char>(ControlCharacter::END) ||
+            byte == static_cast<char>(ControlCharacter::ACK) ||
+            byte == static_cast<char>(ControlCharacter::NAK) ||
+            byte == static_cast<char>(ControlCharacter::ESC)) {
+ 
+            dataBuffer.push_back(static_cast<char>(ControlCharacter::ESC));
+        }
+        dataBuffer.push_back(byte);
+        if (dataBuffer.size() == 128) { 
+            DataBlock block(dataBuffer, crc);
+            {
+                std::unique_lock<std::mutex> lock(mtx);
+                outputBuffer[block.getBlockNummer()] = block;
+                blockNumbersToSend.push_back(block.getBlockNummer());
+                cv.notify_one();
+            }        
+            dataBuffer.clear();
+        }
     }
+    isReading = false;
+    cv.notify_one();
 }
 
 void DataWriting(B15F& drv) {
     while (true) {
         std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [] { return !outputBuffer.empty(); });
+        cv.wait(lock, [] { return !blockNumbersToSend.empty() || !isReading; });
 
-        DataBlock block = outputBuffer.front();
-        outputBuffer.pop();
+        if (blockNumbersToSend.empty() && !isReading) {
+            break;
+        }
+        uint16_t currentBlockNumber = blockNumbersToSend.front();
+        blockNumbersToSend.pop_front();
+        DataBlock block = outputBuffer[currentBlockNumber];
         lock.unlock();
         sendData(drv, block);
     }
@@ -57,8 +87,6 @@ void writeToB15(B15F& drv, int data) {
     drv.setRegister(&PORTA, data | 0b00001000);
     drv.delay_ms(10);
     drv.setRegister(&PORTA, 0x00);
-    std::bitset<3> bin(data);
-    std::cout << bin << std::endl;
 }
 
 void readFromB15(B15F& drv) {

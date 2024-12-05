@@ -40,7 +40,7 @@ int main() {
 }
 
 void DataBlockCreating(CRC & crc) {
-    std::vector<char> dataBuffer;
+    std::vector<unsigned char> dataBuffer;
     char byte;
     while (std::cin.get(byte)) {
         if (byte == static_cast<char>(ControlCharacter::START) ||
@@ -99,7 +99,7 @@ void readFromB15(B15F& drv) {
 void sendData(B15F& drv, DataBlock& block) {
     unsigned int bitStream = 0;
     int bitCount = 0;
-    for (char currentChar : block.getFullBlock()) {
+    for (unsigned char currentChar : block.getFullBlock()) {
         for (int j = 7; j >= 0; j--) {
             bitStream = (bitStream << 1) | ((currentChar >> j) & 0x01);
             bitCount++;

@@ -37,8 +37,8 @@ class DataBlock {
             this->crcSum = computedCrc;
         }
 
-       std::vector<char> getFullDataBlock() {
-            std::vector<char> fullBlock;
+       std::vector<unsigned char> getFullDataBlock() {
+            std::vector<unsigned char> fullBlock;
             fullBlock.insert(fullBlock.end(), header.begin(), header.end());
             fullBlock.insert(fullBlock.end(), data.begin(), data.end());
             fullBlock.insert(fullBlock.end(), crcSum.begin(), crcSum.end());

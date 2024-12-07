@@ -8,8 +8,8 @@
 #include <condition_variable>
 #include <atomic>
 
-#include "DataBlock.cpp"
-#include "CRC.cpp"
+#include "DataBlock.hpp"
+#include "CRC.hpp"
 
 std::map<u_int16_t, DataBlock> outputBuffer;
 std::deque<uint16_t> blockNumbersToSend;
@@ -27,9 +27,10 @@ void DataWriting(B15F& drv);
 int main() {
     B15F& drv = B15F::getInstance();
     drv.setRegister(&DDRA, 0x0f);
+    
     CRC CRC_Instance = CRC();
 
-    std::thread DataBlockCreater(DataBlockCreating);
+    std::thread DataBlockCreater(DataBlockCreating, std::ref(CRC_Instance));
     std::thread DataWriter(DataWriting, std::ref(drv));
 
     DataBlockCreater.join();
@@ -37,9 +38,11 @@ int main() {
 
     drv.setRegister(&PORTA, 0);
     std::cout << std::endl;
+    
 }
 
 void DataBlockCreating(CRC & crc) {
+    std::cout << "Thread 1" << std::endl;
     std::vector<unsigned char> dataBuffer;
     char byte;
     while (std::cin.get(byte)) {
@@ -63,11 +66,22 @@ void DataBlockCreating(CRC & crc) {
             dataBuffer.clear();
         }
     }
+    if (!dataBuffer.empty()) {
+        DataBlock block(dataBuffer, crc);
+        {
+            std::unique_lock<std::mutex> lock(mtx);
+            outputBuffer[block.getBlockNummer()] = block;
+            blockNumbersToSend.push_back(block.getBlockNummer());
+            cv.notify_one();
+        }
+    }
     isReading = false;
     cv.notify_one();
+    std::cout << "Thread 1 ende" << std::endl;
 }
 
 void DataWriting(B15F& drv) {
+    std::cout << "Thread 2" << std::endl;
     while (true) {
         std::unique_lock<std::mutex> lock(mtx);
         cv.wait(lock, [] { return !blockNumbersToSend.empty() || !isReading; });
@@ -81,12 +95,15 @@ void DataWriting(B15F& drv) {
         lock.unlock();
         sendData(drv, block);
     }
+    std::cout << "Thread 2 ende" << std::endl;
 }
 
 void writeToB15(B15F& drv, int data) {
     drv.setRegister(&PORTA, data | 0b00001000);
-    drv.delay_ms(10);
+    drv.delay_ms(5);
     drv.setRegister(&PORTA, 0x00);
+    std::bitset<3> bitSet(data);  // Nimmt nur die unteren 3 Bits von 'data'
+    std::cout << bitSet;
 }
 
 void readFromB15(B15F& drv) {
@@ -97,9 +114,10 @@ void readFromB15(B15F& drv) {
 }
 
 void sendData(B15F& drv, DataBlock& block) {
+    std::cout << "sendData aufgerufen" << std::endl;
     unsigned int bitStream = 0;
     int bitCount = 0;
-    for (unsigned char currentChar : block.getFullBlock()) {
+    for (unsigned char currentChar : block.getFullDataBlock()) {
         for (int j = 7; j >= 0; j--) {
             bitStream = (bitStream << 1) | ((currentChar >> j) & 0x01);
             bitCount++;

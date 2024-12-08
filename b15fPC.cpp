@@ -14,15 +14,26 @@
 std::map<u_int16_t, DataBlock> outputBuffer;
 std::deque<uint16_t> blockNumbersToSend;
 
-std::atomic<bool> isReading{true};
-std::mutex mtx;
-std::condition_variable cv;
+std::atomic<bool> isCreating{true};
+std::mutex outputBufferMutex;
+std::condition_variable cv_output;
+
+std::mutex registerMutex;
+std::condition_variable cv_clockPause;
+std::atomic<bool> isClockPause{true};
+
+std::deque<uint8_t> inputBuffer;
+std::atomic<bool> isSending{true};
+std::mutex inputBufferMutex;
+std::condition_variable cv_input;
+
 
 void writeToB15(B15F& drv, int data);
 void sendData(B15F& drv, DataBlock& block);
 void readFromB15(B15F& drv);
 void DataBlockCreating(CRC & crc);
 void DataWriting(B15F& drv);
+void DataReading(B15F& drv);
 
 int main() {
     B15F& drv = B15F::getInstance();
@@ -58,10 +69,10 @@ void DataBlockCreating(CRC & crc) {
         if (dataBuffer.size() == 128) { 
             DataBlock block(dataBuffer, crc);
             {
-                std::unique_lock<std::mutex> lock(mtx);
+                std::unique_lock<std::mutex> outputBufferLock(outputBufferMutex);
                 outputBuffer[block.getBlockNummer()] = block;
                 blockNumbersToSend.push_back(block.getBlockNummer());
-                cv.notify_one();
+                cv_output.notify_one();
             }        
             dataBuffer.clear();
         }
@@ -69,47 +80,45 @@ void DataBlockCreating(CRC & crc) {
     if (!dataBuffer.empty()) {
         DataBlock block(dataBuffer, crc);
         {
-            std::unique_lock<std::mutex> lock(mtx);
+            std::unique_lock<std::mutex> outputBufferLock(outputBufferMutex);
             outputBuffer[block.getBlockNummer()] = block;
             blockNumbersToSend.push_back(block.getBlockNummer());
-            cv.notify_one();
+            cv_output.notify_one();
         }
     }
-    isReading = false;
-    cv.notify_one();
+    isCreating = false;
+    cv_output.notify_one();
     std::cout << "Thread 1 ende" << std::endl;
 }
 
 void DataWriting(B15F& drv) {
     std::cout << "Thread 2" << std::endl;
     while (true) {
-        std::unique_lock<std::mutex> lock(mtx);
-        cv.wait(lock, [] { return !blockNumbersToSend.empty() || !isReading; });
+        std::unique_lock<std::mutex> outputBufferLock(outputBufferMutex);
+        cv_output.wait(outputBufferLock, [] { return !blockNumbersToSend.empty() || !isCreating; });
 
-        if (blockNumbersToSend.empty() && !isReading) {
+        if (blockNumbersToSend.empty() && !isCreating) {
             break;
         }
         uint16_t currentBlockNumber = blockNumbersToSend.front();
         blockNumbersToSend.pop_front();
         DataBlock block = outputBuffer[currentBlockNumber];
-        lock.unlock();
+        outputBufferLock.unlock();
         sendData(drv, block);
     }
+    isSending = false;
     std::cout << "Thread 2 ende" << std::endl;
 }
 
 void writeToB15(B15F& drv, int data) {
-    drv.setRegister(&PORTA, data | 0b00001000);
+    {
+        std::unique_lock<std::mutex> registerLock(registerMutex);
+        drv.setRegister(&PORTA, data | 0b00001000);
+    }
     drv.delay_ms(5);
-    drv.setRegister(&PORTA, 0x00);
-    std::bitset<3> bitSet(data);  // Nimmt nur die unteren 3 Bits von 'data'
-    std::cout << bitSet;
-}
-
-void readFromB15(B15F& drv) {
-    int currentValue = drv.getRegister(&PINA);
-    if (currentValue > 127) {
-        std::cout << (currentValue & 0xf0);
+    {
+        std::unique_lock<std::mutex> registerLock(registerMutex);
+        drv.setRegister(&PORTA, 0x00);
     }
 }
 
@@ -131,4 +140,24 @@ void sendData(B15F& drv, DataBlock& block) {
         bitStream = bitStream << (3 - bitCount);
         writeToB15(drv, bitStream & 0x07);
     }
+}
+
+void DataReading(B15F & drv){
+    std::cout << "Thread 3" << std::endl;
+    while(isSending){
+        std::unique_lock<std::mutex> registerLock(registerMutex);
+        cv_clockPause.wait(registerLock, [] { return isClockPause; });
+        int currentValue = drv.getRegister(&PINA);
+        if (currentValue > 127) {
+            std::unique_lock<std::mutex> inputBufferLock(inputBufferMutex);
+            inputBuffer.push_back(currentValue & 0b01110000);
+        }
+    }
+
+
+    std::cout << "Thread 3 ende" << std::endl;
+}
+
+void ReadDataProcessing(){
+
 }

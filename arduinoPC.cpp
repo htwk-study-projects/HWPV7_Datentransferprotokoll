@@ -8,7 +8,7 @@
 
 // Funktion zum Öffnen und Konfigurieren des seriellen Ports
 int openSerialPort(const char* portName) {
-    int serialPort = open(portName, O_RDWR | O_NOCTTY | O_NDELAY);  // O_NDELAY macht den Port nicht blockierend
+    int serialPort = open("/dev/cu.usbserial-1130", O_RDWR | O_NOCTTY | O_NDELAY);  // O_NDELAY macht den Port nicht blockierend
     if (serialPort < 0) {
         std::cerr << "Fehler beim Öffnen des Ports: " << strerror(errno) << std::endl;
         return -1;

@@ -2,12 +2,14 @@
 #include <b15f/b15f.h>
 #include <map>
 #include <vector>
+#include <set>
 
 #include "DataBlock.hpp"
 #include "CRC.hpp"
 
 std::map<u_int16_t, DataBlock> outputBuffer;
 std::deque<uint16_t> blockNumbersToSend;
+std::set<uint16_t> failedBlockNumbers;
 
 
 std::deque<uint8_t> inputBuffer;
@@ -27,7 +29,7 @@ int main() {
 
     DataBlockCreating(CRC_Instance);
     DataWriting(drv);
-
+    
     std::cout << (int) (CRC_Instance.verifyDataWithCRC(outputBuffer[0].getFullDataBlock()))<< std::endl;
 
     drv.setRegister(&PORTA, 0);
@@ -53,6 +55,7 @@ void DataBlockCreating(CRC & crc) {
             outputBuffer[block.getBlockNummer()] = block;
             std::cout << block.getBlockNummer() << std::endl;
             blockNumbersToSend.push_back(block.getBlockNummer());
+            failedBlockNumbers.push_back(block.getBlockNummer());
             dataBuffer.clear();
         }
     }
@@ -62,7 +65,7 @@ void DataBlockCreating(CRC & crc) {
 
         std::cout << block.getBlockNummer() << std::endl;
         blockNumbersToSend.push_back(block.getBlockNummer());
-
+        failedBlockNumbers.push_back(block.getBlockNummer());
     }
     std::cout << "Finished block creating" << std::endl;
 }

@@ -11,9 +11,7 @@ std::map<u_int16_t, DataBlock> outputBuffer;
 std::deque<uint16_t> blockNumbersToSend;
 std::set<uint16_t> failedBlockNumbers;
 
-
 std::deque<uint8_t> inputBuffer;
-std::mutex inputBufferMutex;
 
 
 void writeToB15(B15F& drv, int data);
@@ -87,10 +85,11 @@ void DataWriting(B15F& drv) {
 
 void writeToB15(B15F& drv, int data) {
     drv.setRegister(&PORTA, data | 0b00001000);
-    drv.delay_ms(10);
     std::bitset<3> a = data;
     std::cout << a;
-    drv.setRegister(&PORTA, 0x00);
+    drv.delay_ms(15);
+    drv.setRegister(&PORTA, data | 0b00000000);
+    drv.delay_ms(15);
 }
 
 void sendData(B15F& drv, DataBlock& block) {

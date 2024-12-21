@@ -1,9 +1,8 @@
-#include "CRC.hpp"  // Header-Datei einbinden
+#include "CRC.hpp"
 #include <vector>
 
-// Definition der statischen Variablen
 const uint32_t CRC::POLYNOMIAL = 0x11021;  // Generatorpolynom (x^16 + x^12 + x^5 + 1) CRC-16-CCITT False
-std::vector<uint16_t> CRC::crcTable;  // Definition der CRC-Tabelle
+std::vector<uint16_t> CRC::crcTable;
 
 // Konstruktor
 CRC::CRC() {
@@ -12,7 +11,6 @@ CRC::CRC() {
     }
 }
 
-// Statische Methode zur Initialisierung der CRC-Tabelle
 void CRC::initializeCRCTable() {
     crcTable.resize(256);
     for (int i = 0; i < 256; ++i) {
@@ -28,7 +26,6 @@ void CRC::initializeCRCTable() {
     }
 }
 
-// Berechnet den CRC-16-Wert für die gegebenen Daten
 uint16_t CRC::calculateCRC16(const std::vector<unsigned char>& data) {
     uint16_t crc = 0xFFFF; // Initialwert für CRC (alle Einsen, weil CRC-16-CCITT False)
 
@@ -40,7 +37,6 @@ uint16_t CRC::calculateCRC16(const std::vector<unsigned char>& data) {
     return crc;
 }
 
-// Verifiziert die Daten mit einem CRC-Wert
 bool CRC::verifyDataWithCRC(const std::vector<unsigned char>& dataWithCRC) {
     uint16_t crc = calculateCRC16(dataWithCRC);
     return (crc == 0);

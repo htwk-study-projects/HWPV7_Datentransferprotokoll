@@ -1,0 +1,36 @@
+#pragma once
+#include <deque>
+#include <map>
+#include <set>
+
+//#include <b15f/b15f.h>
+
+#include "DataBlock.hpp"
+#include "CRC.hpp"
+
+
+class Sender{
+private:
+    std::map<u_int16_t, DataBlock> outputBuffer;
+    std::deque<uint16_t> blockNumbersToSend;
+    std::set<uint16_t> failedBlockNumbers;  
+
+    static const CRC USED_CRC_INSTANCE;
+    const B15F& b15;
+
+    bool isControlCharacter(char c);
+    void addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);
+
+    void writeToB15(int);
+    void sendDataBlock(DataBlock);
+
+public:
+
+    Sender(B15F&);
+    void createDataBlocks();
+    void send();
+
+
+
+
+};

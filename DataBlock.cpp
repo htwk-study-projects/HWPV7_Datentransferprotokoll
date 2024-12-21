@@ -2,6 +2,7 @@
 
 // Initialisierung der statischen Variablen
 int16_t DataBlock::DATA_BLOCK_NUMMER = 0;
+const int DataBlock::MAX_LENGTH_DATA = 128;
 
 // Konstruktor ohne Parameter
 DataBlock::DataBlock() {

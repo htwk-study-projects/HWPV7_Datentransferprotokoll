@@ -81,6 +81,8 @@ void Sender::sendDataBlock(DataBlock block){
     }
 }
 
+// IDEE: in der Pause auf ein Klassenattribut schreiben und durchprüfen nach dem Senden aller Blöcke oder ein thread schreibt und liest und der andere verarbeitet.
+
 void Sender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, data | 0b00001000);
     std::bitset<3> a = data;

@@ -8,6 +8,8 @@
 #include "CRC.hpp"
 #include "Sender.hpp"
 
+//IDEE: Über ARGS* in main bestimmen ob eine Sender Instanz oder eine Empfänger Instanz erstellt wird
+
 int main() {
     B15F& drv = B15F::getInstance();
     drv.setRegister(&DDRA, 0x0f);

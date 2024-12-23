@@ -9,8 +9,6 @@
 #include "Sender.hpp"
 #include "Receiver.hpp"
 
-//IDEE: Über ARGS* in main bestimmen ob eine Sender Instanz oder eine Empfänger Instanz erstellt wird
-// sollte umgesetzt sein
 int main(int argc, char* argv[]) {
     if(argc < 2){
         std::cerr << "Fehler: Bitte '-s' -> sender oder '-r' -> receiver als Argument übergeben.\n";
@@ -22,8 +20,12 @@ int main(int argc, char* argv[]) {
     if(strcmp(argv[1], "-s") == 0){
         Sender sender = Sender(drv);
         sender.createDataBlocks();
-        sender.send();
+        do{
+            sender.send();
+            sender.checkAKNFromReceiver();
+        }while(sender.addBlocksForAdditionalSending());     
     }
+
     else if(strcmp(argv[1], "-r") == 0){
         Reciever reciever = Reciever();
     }

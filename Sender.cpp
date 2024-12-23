@@ -34,7 +34,7 @@ void Sender::createDataBlocks()
 bool Sender::isControlCharacter(char c){
     return  c == static_cast<char>(ControlCharacter::START) || c == static_cast<char>(ControlCharacter::END) ||
             c == static_cast<char>(ControlCharacter::ACK) || c == static_cast<char>(ControlCharacter::NAK) ||
-            c== static_cast<char>(ControlCharacter::ESC);
+            c == static_cast<char>(ControlCharacter::ESC);
 }
 
 void Sender::addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock){
@@ -48,10 +48,7 @@ void Sender::addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock){
 
 void Sender::send(){
     std::cerr << "start sending" << std::endl;
-    while (true) {
-        if (blockNumbersToSend.empty()) {
-            break;
-        }
+    while (!blockNumbersToSend.empty()) {
         uint16_t currentBlockNumber = blockNumbersToSend.front();
         blockNumbersToSend.pop_front();
         DataBlock block = outputBuffer[currentBlockNumber];
@@ -82,14 +79,45 @@ void Sender::sendDataBlock(DataBlock block){
 }
 
 // IDEE: in der Pause auf ein Klassenattribut schreiben und durchprüfen nach dem Senden aller Blöcke oder ein thread schreibt und liest und der andere verarbeitet.
+// Tatsächlicher clockpin für empfangen muss noch bestimmt werden
 
 void Sender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, data | 0b00001000);
     std::bitset<3> a = data;
     std::cerr << a;
-    this->b15.delay_ms(15);
+    this->b15.delay_ms(5);
+    uint8_t currentInput = this->b15.getRegister(&PINA);
+    if(currentInput & 0b00010000){
+        this->inputBuffer.push_back((currentInput >> 5));
+    }
+    this->b15.delay_ms(5);
     this->b15.setRegister(&PORTA, data | 0b00000000);
     this->b15.delay_ms(15);
 }
 
+bool Sender::addBlocksForAdditionalSending(){
+    if(failedBlockNumbers.empty()) return false;
+    for(uint16_t i : failedBlockNumbers){
+        blockNumbersToSend.push_back(i);
+    }
+    return true;
+}
+
+void Sender::checkAKNFromReceiver() {
+    unsigned int bitStream = 0;
+    int bitCount = 0;
+    for (uint8_t i : inputBuffer) {
+        bitStream = (bitStream << 3) | (i & 0b00000111);
+        bitCount += 3;
+        if (bitCount = 24) {
+            uint8_t firstByte = (bitStream >> 16) & 0xff;
+            uint16_t blockNum = bitStream & 0xffff;
+            if (firstByte == static_cast<uint8_t>(ControlCharacter::ACK)) {
+                this->failedBlockNumbers.erase(blockNum);
+            }
+            bitCount = 0;
+            bitStream = 0;
+        }
+    }
+}
 

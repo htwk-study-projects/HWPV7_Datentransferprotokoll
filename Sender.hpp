@@ -15,22 +15,21 @@ private:
     std::deque<uint16_t> blockNumbersToSend;
     std::set<uint16_t> failedBlockNumbers;  
 
+    std::vector<uint8_t> inputBuffer;
+
     static const CRC USED_CRC_INSTANCE;
     const B15F& b15;
 
     bool isControlCharacter(char c);
     void addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);
-
     void writeToB15(int);
     void sendDataBlock(DataBlock);
 
 public:
-
     Sender(B15F&);
     void createDataBlocks();
     void send();
-
-
-
+    void checkAKNFromReceiver();
+    bool addBlocksForAdditionalSending();
 
 };

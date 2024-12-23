@@ -109,7 +109,7 @@ void Sender::checkAKNFromReceiver() {
     for (uint8_t i : inputBuffer) {
         bitStream = (bitStream << 3) | (i & 0b00000111);
         bitCount += 3;
-        if (bitCount = 24) {
+        if (bitCount == 24) {
             uint8_t firstByte = (bitStream >> 16) & 0xff;
             uint16_t blockNum = bitStream & 0xffff;
             if (firstByte == static_cast<uint8_t>(ControlCharacter::ACK)) {

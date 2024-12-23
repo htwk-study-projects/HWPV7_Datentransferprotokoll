@@ -18,7 +18,7 @@ private:
     std::vector<uint8_t> inputBuffer;
 
     static const CRC USED_CRC_INSTANCE;
-    const B15F& b15;
+    B15F& b15;
 
     bool isControlCharacter(char c);
     void addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);

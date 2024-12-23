@@ -1,7 +1,7 @@
 #include "DataBlock.hpp"
 
 // Initialisierung der statischen Variablen
-int16_t DataBlock::DATA_BLOCK_NUMMER = 0;
+uint16_t DataBlock::DATA_BLOCK_NUMMER = 0;
 const int DataBlock::MAX_LENGTH_DATA = 128;
 
 DataBlock::DataBlock() {
@@ -35,12 +35,12 @@ DataBlock::DataBlock(const DataBlock& other) {
     this->blockNummer = other.blockNummer;
 }
 
-std::vector<unsigned char> DataBlock::getFullDataBlock() {
+std::vector<unsigned char> DataBlock::getFullDataBlock(){
     std::vector<unsigned char> fullBlock;
-    //fullBlock.insert(fullBlock.end(), header.begin(), header.end());
+    fullBlock.insert(fullBlock.end(), header.begin(), header.end());
     fullBlock.insert(fullBlock.end(), data.begin(), data.end());
-    //fullBlock.insert(fullBlock.end(), crcSum.begin(), crcSum.end());
-    //fullBlock.insert(fullBlock.end(), static_cast<char>(ControlCharacter::END));  // End-Byte hinzufügen
+    fullBlock.insert(fullBlock.end(), crcSum.begin(), crcSum.end());
+    fullBlock.insert(fullBlock.end(), static_cast<unsigned char>(ControlCharacter::END));  // End-Byte hinzufügen
     return fullBlock;
 }
 

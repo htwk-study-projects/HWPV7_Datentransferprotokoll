@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <cstdint>  // Für uint16_t und uint32_t
+#include <cstdint>
 
 class CRC {
 private:

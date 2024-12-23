@@ -8,8 +8,8 @@ private:
     std::vector<unsigned char> header;
     std::vector<unsigned char> data;
     std::vector<unsigned char> crcSum;
-    int16_t blockNummer;
-    static int16_t DATA_BLOCK_NUMMER;
+    uint16_t blockNummer;
+    static uint16_t DATA_BLOCK_NUMMER;
 
     std::vector<unsigned char> createHeader();
 
@@ -20,7 +20,6 @@ public:
     DataBlock();  // Standardkonstruktor
     DataBlock(const std::vector<unsigned char>& data, CRC crc);  // Konstruktor mit Daten und CRC
     DataBlock(const DataBlock& other);  // Kopierkonstruktor
-
     std::vector<unsigned char> getFullDataBlock();
     uint16_t getBlockNummer();
 };

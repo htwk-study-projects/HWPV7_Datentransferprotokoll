@@ -3,7 +3,7 @@
 #include <map>
 #include <set>
 
-//#include <b15f/b15f.h>
+#include <b15f/b15f.h>
 
 #include "DataBlock.hpp"
 #include "CRC.hpp"
@@ -17,7 +17,7 @@ private:
 
     std::vector<uint8_t> inputBuffer;
 
-    static const CRC USED_CRC_INSTANCE;
+    CRC USED_CRC_INSTANCE;
     B15F& b15;
 
     bool isControlCharacter(char c);
@@ -26,7 +26,7 @@ private:
     void sendDataBlock(DataBlock);
 
 public:
-    Sender(B15F&);
+    Sender(B15F&, CRC);
     void createDataBlocks();
     void send();
     void checkAKNFromReceiver();

@@ -15,19 +15,19 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     B15F& drv = B15F::getInstance();
+    CRC crcInstance = CRC();
     drv.setRegister(&DDRA, 0x0f);
     //drv.setRegister(&PORTA, 0x0f);
     if(strcmp(argv[1], "-s") == 0){
-        Sender sender = Sender(drv);
+        Sender sender = Sender(drv, crcInstance);
         sender.createDataBlocks();
         do{
             sender.send();
             sender.checkAKNFromReceiver();
         }while(sender.addBlocksForAdditionalSending());     
     }
-
     else if(strcmp(argv[1], "-r") == 0){
-        Reciever reciever = Reciever();
+        Reciever reciever = Reciever(drv, crcInstance);
     }
 
 

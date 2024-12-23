@@ -4,10 +4,9 @@
 
 #include <iostream>
 
-const CRC Sender::USED_CRC_INSTANCE = CRC();
-
-Sender::Sender(B15f& drv){
+Sender::Sender(B15f& drv, CRC crc){
     this->b15 = drv;
+    this->USED_CRC_INSTANCE = crc;
 }
 
 void Sender::createDataBlocks()

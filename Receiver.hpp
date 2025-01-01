@@ -3,13 +3,13 @@
 #include <vector>
 #include <deque>
 #include <map>
-#include <b15f/b15f.h>
+//#include <b15f/b15f.h>
 
 #include "DataBlock.hpp"
 #include "CRC.hpp"
 #include "AKNBlock.hpp"
 
-class Reciever{
+class Receiver{
 private:
     std::vector<uint8_t> inputBuffer;
     std::map<u_int16_t, DataBlock> correctlyRecievedBlocks;
@@ -20,11 +20,15 @@ private:
 
     bool needToRead;
 
-    void sendAKN(AKNBlock);
+    void readWithSendAKN(AKNBlock);
+    void readWithoutSendAKN();
+    void contactB15(int, bool);
+
     bool verifyDataBlock();
 
+
 public:
-    Reciever(B15F&, CRC);
+    Receiver(B15F&, CRC);
 
     void read();
     void processReadBlocks();

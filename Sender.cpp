@@ -1,5 +1,4 @@
 #include "Sender.hpp"
-#include "CRC.hpp"
 #include "ControlCharacter.hpp"
 
 #include <iostream>
@@ -108,13 +107,14 @@ void Sender::checkAKNFromReceiver() {
                 this->failedBlockNumbers.erase(blockNum);
             }
             bitCount = 0;
-        
+            bitStream = 0;
+        }
     }
 }
 
 void Sender::sendEndOfTransmitting(){
     // 3 END-Zeichen hintereinander
-    const std::vector<unsigned char> EOT = {static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END)}
+    const std::vector<unsigned char> EOT = {static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END)};
     unsigned int bitStream = 0;
     int bitCount = 0;
     for (unsigned char currentChar : EOT) {

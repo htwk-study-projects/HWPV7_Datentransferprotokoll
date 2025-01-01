@@ -31,5 +31,6 @@ public:
     void send();
     void checkAKNFromReceiver();
     bool addBlocksForAdditionalSending();
+    void sendEndOfTransmitting();
 
 };

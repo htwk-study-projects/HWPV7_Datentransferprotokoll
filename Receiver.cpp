@@ -65,3 +65,8 @@ void Receiver::processReadBlocks(){
     //muss Headererkennung haben wenn verfikation passt
     //muss Datenextrahieren
 }
+
+bool Receiver::hasTransmissionStarted(){
+    if(this->b15.getRegister(&PINA) == 0b00001111) return true;
+    return false;
+}

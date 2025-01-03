@@ -36,7 +36,9 @@ int main(int argc, char* argv[]) {
         //Verarbeitender bis alle blocks erfolgreich da sind und diese zusammengesetzt wurden
 
         //soll zuerst nur horchen bis SOT, alle 4 Empfangsbits einmal HIGH gesetzt ab danach read();
-
+        while(!receiver.hasTransmissionStarted()){
+            //warten bis true
+        }
         reciever.read();   //soll dan in einen thread
     }
 

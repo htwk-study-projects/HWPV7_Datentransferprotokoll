@@ -30,6 +30,8 @@ private:
 public:
     Receiver(B15F&, CRC);
 
+    bool hasTransmissionStarted();
+
     void read();
     void processReadBlocks();
 

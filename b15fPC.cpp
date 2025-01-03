@@ -22,6 +22,7 @@ int main(int argc, char* argv[]) {
     if(strcmp(argv[1], "-s") == 0){
         Sender sender = Sender(drv, crcInstance);
         sender.createDataBlocks();
+        sender.sendStartOfTransmitting();
         do{
             sender.send();
             sender.checkAKNFromReceiver();
@@ -34,7 +35,9 @@ int main(int argc, char* argv[]) {
         //Lesender soll solange arbeiten bis alles gelesen und alle akn gesendet wurden
         //Verarbeitender bis alle blocks erfolgreich da sind und diese zusammengesetzt wurden
 
-        reciever.read();
+        //soll zuerst nur horchen bis SOT, alle 4 Empfangsbits einmal HIGH gesetzt ab danach read();
+
+        reciever.read();   //soll dan in einen thread
     }
 
 

@@ -128,3 +128,8 @@ void Sender::sendEndOfTransmitting(){
         }
     }
 }
+
+void Sender::sendStartOfTransmitting(){
+    //Alle 4 sendebits HIGH setzen als Startzeichen
+    writeToB15(0b00001111);
+}

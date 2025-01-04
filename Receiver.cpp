@@ -5,7 +5,7 @@
 Receiver::Receiver(CRC crc){
     this->USED_CRC_INSTANCE = crc;
     this->needToRead = true;
-    this->b15.setRegister(&DDRA, 0x0f);
+    this->b15.setRegister(&DDRA, 0xf0);
 }
 
 void Receiver::readWithSendAKN(AKNBlock akn){
@@ -25,22 +25,22 @@ void Receiver::readWithSendAKN(AKNBlock akn){
 }
 
 void Receiver::readWithoutSendAKN(){
-    contactB15(0, false);
+    this->b15.delay_ms(15); 
+    uint8_t currentInput = this->b15.getRegister(&PINA);
+    if(currentInput & 0b00001000){
+        this->inputBuffer.push_back((currentInput & 0x07));
+    }
+    this->b15.delay_ms(15);
 }
 
 void Receiver::contactB15(int data, bool withSend){
-    if(withSend){
-        this->b15.setRegister(&PORTA, data | 0b00001000);
-        this->b15.delay_ms(10);       
-    }
-    else{
-        this->b15.delay_ms(15); 
-    }
+    this->b15.setRegister(&PORTA, (data << 4) | 0b10000000);
+    this->b15.delay_ms(10);       
     uint8_t currentInput = this->b15.getRegister(&PINA);
     if(currentInput & 0b00010000){
         this->inputBuffer.push_back((currentInput >> 5));
     }
-    this->b15.setRegister(&PORTA, data | 0b00000000);
+    this->b15.setRegister(&PORTA, (data << 4) | 0b00000000);
     this->b15.delay_ms(15);
 }
 
@@ -64,9 +64,4 @@ void Receiver::processReadBlocks(){
 
     //muss Headererkennung haben wenn verfikation passt
     //muss Datenextrahieren
-}
-
-bool Receiver::hasTransmissionStarted(){
-    if(this->b15.getRegister(&PINA) == 0b00001111) return true;
-    return false;
 }

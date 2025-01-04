@@ -30,8 +30,6 @@ private:
 public:
     Receiver(CRC);
 
-    bool hasTransmissionStarted();
-
     void read();
     void processReadBlocks();
 

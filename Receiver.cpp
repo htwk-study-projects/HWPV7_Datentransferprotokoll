@@ -2,10 +2,10 @@
 
 #include <iostream>
 
-Receiver::Receiver(B15F &drv, CRC crc){
-    this->b15 = drv;
+Receiver::Receiver(CRC crc){
     this->USED_CRC_INSTANCE = crc;
     this->needToRead = true;
+    this->b15.setRegister(&DDRA, 0x0f);
 }
 
 void Receiver::readWithSendAKN(AKNBlock akn){

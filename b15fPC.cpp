@@ -14,13 +14,10 @@ int main(int argc, char* argv[]) {
         std::cerr << "Fehler: Bitte '-s' -> sender oder '-r' -> receiver als Argument übergeben.\n";
         return 1;
     }
-    B15F& drv = B15F::getInstance();
     CRC crcInstance = CRC();
-    drv.setRegister(&DDRA, 0x0f);
-    //drv.setRegister(&PORTA, 0x0f);
 
     if(strcmp(argv[1], "-s") == 0){
-        Sender sender = Sender(drv, crcInstance);
+        Sender sender = Sender(crcInstance);
         sender.createDataBlocks();
         sender.sendStartOfTransmitting();
         do{
@@ -30,7 +27,7 @@ int main(int argc, char* argv[]) {
         sender.sendEndOfTransmitting();
     }
     else if(strcmp(argv[1], "-r") == 0){
-        Receiver receiver = Receiver(drv, crcInstance);
+        Receiver receiver = Receiver(crcInstance);
         //ein lesender und ein verarbeitender Thread, 
         //Lesender soll solange arbeiten bis alles gelesen und alle akn gesendet wurden
         //Verarbeitender bis alle blocks erfolgreich da sind und diese zusammengesetzt wurden
@@ -42,7 +39,5 @@ int main(int argc, char* argv[]) {
         reciever.read();   //soll dan in einen thread
     }
 
-
-    drv.setRegister(&PORTA, 0);
     return 0;
 }

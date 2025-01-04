@@ -3,9 +3,9 @@
 
 #include <iostream>
 
-Sender::Sender(B15f& drv, CRC crc){
-    this->b15 = drv;
+Sender::Sender(CRC crc){
     this->USED_CRC_INSTANCE = crc;
+    this->b15.setRegister(&DDRA, 0x0f);
 }
 
 void Sender::createDataBlocks(){

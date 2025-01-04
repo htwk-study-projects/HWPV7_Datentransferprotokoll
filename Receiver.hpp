@@ -16,7 +16,7 @@ private:
     std::deque<AKNBlock> AKNBlocks;
 
     CRC USED_CRC_INSTANCE;
-    B15F& b15;
+    B15F& b15 = B15F::getInstance();;
 
     bool needToRead;
 
@@ -28,7 +28,7 @@ private:
 
 
 public:
-    Receiver(B15F&, CRC);
+    Receiver(CRC);
 
     bool hasTransmissionStarted();
 

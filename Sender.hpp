@@ -18,7 +18,7 @@ private:
     std::vector<uint8_t> inputBuffer;
 
     CRC USED_CRC_INSTANCE;
-    B15F& b15;
+    B15F& b15 = B15F::getInstance();;
 
     bool isControlCharacter(char c);
     void addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);
@@ -26,7 +26,7 @@ private:
     void sendDataBlock(DataBlock);
 
 public:
-    Sender(B15F&, CRC);
+    Sender(CRC);
     void createDataBlocks();
     void send();
     void checkAKNFromReceiver();

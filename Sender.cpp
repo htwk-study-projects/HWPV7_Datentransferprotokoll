@@ -78,13 +78,13 @@ void Sender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, data | 0b00001000);
     std::bitset<3> a = data;
     std::cerr << a;
-    this->b15.delay_ms(10);
+    this->b15.delay_ms(15);
     uint8_t currentInput = this->b15.getRegister(&PINA);
     if(currentInput & 0b00010000){
         this->inputBuffer.push_back((currentInput >> 5));
     }
     this->b15.setRegister(&PORTA, data | 0b00000000);
-    this->b15.delay_ms(15);
+    this->b15.delay_ms(20);
 }
 
 bool Sender::addBlocksForAdditionalSending(){

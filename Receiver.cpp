@@ -16,7 +16,7 @@ void Receiver::readWithSendAKN(AKNBlock akn){
             bitStream = (bitStream << 1) | ((currentChar >> j) & 0x01);
             bitCount++;
             if (bitCount == 3) {                                            //muss aufgrund der größe immer aufgehen hier
-                contactB15(bitStream & 0x07, true);
+                contactB15(bitStream & 0x07);
                 bitCount = 0;
             }
         }
@@ -33,11 +33,11 @@ void Receiver::readWithoutSendAKN(){
     this->b15.delay_ms(15);
 }
 
-void Receiver::contactB15(int data, bool withSend){
+void Receiver::contactB15(int data){
     this->b15.setRegister(&PORTA, (data << 4) | 0b10000000);
     this->b15.delay_ms(10);       
     uint8_t currentInput = this->b15.getRegister(&PINA);
-    if(currentInput & 0b00010000){
+    if(currentInput & 0b00001000){
         this->inputBuffer.push_back((currentInput >> 5));
     }
     this->b15.setRegister(&PORTA, (data << 4) | 0b00000000);

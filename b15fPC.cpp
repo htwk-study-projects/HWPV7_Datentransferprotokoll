@@ -31,7 +31,7 @@ int main(int argc, char* argv[]) {
         //Lesender soll solange arbeiten bis alles gelesen und alle akn gesendet wurden
         //Verarbeitender bis alle blocks erfolgreich da sind und diese zusammengesetzt wurden
 
-        reciever.read();   //soll dan in einen thread
+        receiver.read();   //soll dan in einen thread
     }
 
     return 0;

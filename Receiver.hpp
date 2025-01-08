@@ -22,7 +22,7 @@ private:
 
     void readWithSendAKN(AKNBlock);
     void readWithoutSendAKN();
-    void contactB15(int, bool);
+    void contactB15(int);
 
     bool verifyDataBlock();
 

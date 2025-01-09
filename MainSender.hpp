@@ -2,15 +2,15 @@
 #include <deque>
 #include <map>
 #include <set>
-#include <b15f/b15f.h>
+//#include <b15f/b15f.h>
 
 #include "DataBlock.hpp"
 #include "CRC.hpp"
 
 
-class Sender{
+class MainSender{
 private:
-    std::map<u_int16_t, DataBlock> outputBuffer;
+    std::map<uint16_t, DataBlock> outputBuffer;
     std::deque<uint16_t> blockNumbersToSend;
     std::set<uint16_t> failedBlockNumbers;  
 
@@ -25,7 +25,7 @@ private:
     void sendDataBlock(DataBlock);
 
 public:
-    Sender(CRC);
+    MainSender(CRC);
     void createDataBlocks();
     void send();
     void checkAKNFromReceiver();

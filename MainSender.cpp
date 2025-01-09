@@ -1,15 +1,15 @@
-#include "Sender.hpp"
+#include "MainSender.hpp"
 #include "ControlCharacter.hpp"
 
 #include <iostream>
 
-Sender::Sender(CRC crc){
+MainSender::MainSender(CRC crc){
     this->USED_CRC_INSTANCE = crc;
     this->b15.setRegister(&DDRA, 0x0f);
     this->b15.setRegister(&PORTA, 0);
 }
 
-void Sender::createDataBlocks(){
+void MainSender::createDataBlocks(){
     std::cerr << "start block creating" << std::endl;
     std::vector<unsigned char> dataBuffer;
     char byte;
@@ -25,13 +25,13 @@ void Sender::createDataBlocks(){
     std::cerr << "finished block creating" << std::endl;
 }
 
-bool Sender::isControlCharacter(char c){
+bool MainSender::isControlCharacter(char c){
     return  c == static_cast<char>(ControlCharacter::START) || c == static_cast<char>(ControlCharacter::END) ||
             c == static_cast<char>(ControlCharacter::ACK) || c == static_cast<char>(ControlCharacter::NAK) ||
             c == static_cast<char>(ControlCharacter::ESC);
 }
 
-void Sender::addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock){
+void MainSender::addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock){
     DataBlock block = DataBlock(dataForBlock, this->USED_CRC_INSTANCE);
     uint16_t blockNumber = block.getBlockNummer();
     this->outputBuffer[blockNumber] = std::move(block);
@@ -40,7 +40,7 @@ void Sender::addBlockToOutputBuffer(std::vector<unsigned char> dataForBlock){
     std::cerr << "Block " << blockNumber << " added." << std::endl;
 }
 
-void Sender::send(){
+void MainSender::send(){
     std::cerr << "start sending" << std::endl;
     while (!blockNumbersToSend.empty()) {
         uint16_t currentBlockNumber = blockNumbersToSend.front();
@@ -52,7 +52,7 @@ void Sender::send(){
     std::cerr << "end sending" << std::endl;
 }
 
-void Sender::sendDataBlock(DataBlock block){
+void MainSender::sendDataBlock(DataBlock block){
     std::cerr << "sendData aufgerufen" << std::endl;
     unsigned int bitStream = 0;
     int bitCount = 0;
@@ -74,7 +74,7 @@ void Sender::sendDataBlock(DataBlock block){
 
 // Tatsächlicher clockpin für empfangen muss noch bestimmt werden
 
-void Sender::writeToB15(int data) {
+void MainSender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, data);
     this->b15.setRegister(&PORTA, data | 0b00001000);
     std::bitset<3> a = data;
@@ -88,7 +88,7 @@ void Sender::writeToB15(int data) {
     this->b15.delay_ms(15);
 }
 
-bool Sender::addBlocksForAdditionalSending(){
+bool MainSender::addBlocksForAdditionalSending(){
     if(failedBlockNumbers.empty()) return false;
     for(uint16_t i : failedBlockNumbers){
         blockNumbersToSend.push_back(i);
@@ -96,7 +96,7 @@ bool Sender::addBlocksForAdditionalSending(){
     return true;
 }
 
-void Sender::checkAKNFromReceiver() {
+void MainSender::checkAKNFromReceiver() {
     unsigned int bitStream = 0;
     int bitCount = 0;
     for (uint8_t i : inputBuffer) {
@@ -114,7 +114,7 @@ void Sender::checkAKNFromReceiver() {
     }
 }
 
-void Sender::sendEndOfTransmitting(){
+void MainSender::sendEndOfTransmitting(){
     // 3 END-Zeichen hintereinander
     const std::vector<unsigned char> EOT = {static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END)};
     unsigned int bitStream = 0;

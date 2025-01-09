@@ -1,14 +1,14 @@
-#include "Receiver.hpp"
+#include "SideSender.hpp"
 
 #include <iostream>
 
-Receiver::Receiver(CRC crc){
+SideSender::SideSender(CRC crc){
     this->USED_CRC_INSTANCE = crc;
     this->needToRead = true;
     this->b15.setRegister(&DDRA, 0xf0);
 }
 
-void Receiver::readWithSendAKN(AKNBlock akn){
+void SideSender::readWithSendAKN(AKNBlock akn){
     unsigned int bitStream = 0;
     int bitCount = 0;
     for (unsigned char currentChar : akn.getFullAKNBlock()) {
@@ -24,7 +24,7 @@ void Receiver::readWithSendAKN(AKNBlock akn){
 
 }
 
-void Receiver::readWithoutSendAKN(){
+void SideSender::readWithoutSendAKN(){
     this->b15.delay_ms(15); 
     uint8_t currentInput = this->b15.getRegister(&PINA);
     if(currentInput & 0b00001000){
@@ -33,7 +33,7 @@ void Receiver::readWithoutSendAKN(){
     this->b15.delay_ms(15);
 }
 
-void Receiver::contactB15(int data){
+void SideSender::contactB15(int data){
     this->b15.setRegister(&PORTA, (data << 4) | 0b10000000);
     this->b15.delay_ms(10);       
     uint8_t currentInput = this->b15.getRegister(&PINA);
@@ -44,7 +44,7 @@ void Receiver::contactB15(int data){
     this->b15.delay_ms(15);
 }
 
-void Receiver::read(){
+void SideSender::read(){
     std::cerr << "start reading"  << std::endl;
     while(needToRead){
         if(!AKNBlocks.empty()){
@@ -58,7 +58,7 @@ void Receiver::read(){
     std::cerr << "stopped reading" << std::endl;
 }
 
-void Receiver::processReadBlocks(){
+void SideSender::processReadBlocks(){
 
     //muss endzeichen abschneiden und verifikation durchführen
 

@@ -3,16 +3,16 @@
 #include <vector>
 #include <deque>
 #include <map>
-#include <b15f/b15f.h>
+//#include <b15f/b15f.h>
 
 #include "DataBlock.hpp"
 #include "CRC.hpp"
 #include "AKNBlock.hpp"
 
-class Receiver{
+class SideSender{
 private:
     std::vector<uint8_t> inputBuffer;
-    std::map<u_int16_t, DataBlock> correctlyRecievedBlocks;
+    std::map<uint16_t, DataBlock> correctlyRecievedBlocks;
     std::deque<AKNBlock> AKNBlocks;
 
     CRC USED_CRC_INSTANCE;
@@ -28,7 +28,7 @@ private:
 
 
 public:
-    Receiver(CRC);
+    SideSender(CRC);
 
     void read();
     void processReadBlocks();

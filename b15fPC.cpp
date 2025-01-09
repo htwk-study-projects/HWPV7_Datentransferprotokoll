@@ -23,11 +23,10 @@ int main(int argc, char* argv[]) {
         for(uint16_t currentBlock = 0; currentBlock <= blocksToSend; currentBlock++){
             sender.sendDataBlock(currentBlock);
             if(sender.verifyReadBlock()){
-                //sendNAKN();
+                sender.sendNAKN();
             }
-            //sendAKN();
-            sender.checkAKN();
-            //currentBlock -1 rechnen bei NAKN
+            sender.sendAKN();
+            if(!sender.checkAKN()) currentBlock--;
         }           
 
         sender.sendEndOfTransmitting();
@@ -39,11 +38,10 @@ int main(int argc, char* argv[]) {
         for(uint16_t currentBlock = 0; currentBlock <= blocksToSend; currentBlock++){
             sender.sendDataBlock(currentBlock);
             if(sender.verifyReadBlock()){
-                //sendNAKN();
+                sender.sendNAKN();
             }
-            //sendAKN()
-            sender.checkAKN();
-            //currentBlock -1 rechnen bei NAKN
+            sender.sendAKN();
+            if(!sender.checkAKN()) currentBlock--;
         }
         sender.sendEndOfTransmitting();
 

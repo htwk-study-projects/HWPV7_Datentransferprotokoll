@@ -27,7 +27,7 @@ protected:
 
     bool isControlCharacter(char c);
     void addDataBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);
-    void writeToB15(int);
+    virtual void writeToB15(int) = 0;
     void sendBlock(Block);
 
 public:
@@ -38,6 +38,8 @@ public:
     void sendEndOfTransmitting();
     bool verifyReadBlock();
 
-    virtual void sendAKN();
-    virtual void checkAKN();
+    virtual void sendAKN() = 0;
+    virtual void sendNAKN() = 0;
+    virtual bool checkAKN() = 0;
+
 };

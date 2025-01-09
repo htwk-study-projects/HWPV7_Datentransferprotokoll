@@ -17,7 +17,7 @@ protected:
 
     //für das lesen
     std::vector<uint8_t> inputBuffer;
-    std::map<uint16_t, DataBlock> correctlyRecievedBlocks;
+    std::map<uint16_t, std::vector<unsigned char>> correctlyRecievedData;
     
     //für das senden
     std::map<uint16_t, DataBlock> outputBuffer;  
@@ -29,6 +29,7 @@ protected:
     void addDataBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);
     virtual void writeToB15(int) = 0;
     void sendBlock(Block);
+    void saveCorrectData(std::vector<unsigned char>&);
 
 public:
 
@@ -37,6 +38,7 @@ public:
     void sendDataBlock(uint16_t);
     void sendEndOfTransmitting();
     bool verifyReadBlock();
+    
 
     virtual void sendAKN() = 0;
     virtual void sendNAKN() = 0;

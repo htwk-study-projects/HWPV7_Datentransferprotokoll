@@ -22,7 +22,7 @@ int main(int argc, char* argv[]) {
         sender.sendStartOfTransmitting();
         for(uint16_t currentBlock = 0; currentBlock <= blocksToSend; currentBlock++){
             sender.sendDataBlock(currentBlock);
-            if(sender.verifyReadBlock()){
+            if(!sender.verifyReadBlock()){
                 sender.sendNAKN();
             }
             sender.sendAKN();
@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
         while(!sender.waitForMainSender()){}
         for(uint16_t currentBlock = 0; currentBlock <= blocksToSend; currentBlock++){
             sender.sendDataBlock(currentBlock);
-            if(sender.verifyReadBlock()){
+            if(!sender.verifyReadBlock()){
                 sender.sendNAKN();
             }
             sender.sendAKN();

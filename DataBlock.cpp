@@ -35,7 +35,7 @@ DataBlock::DataBlock(const DataBlock& other) {
     this->blockNummer = other.blockNummer;
 }
 
-std::vector<unsigned char> DataBlock::getFullDataBlock(){
+std::vector<unsigned char> DataBlock::getFullBlock(){
     std::vector<unsigned char> fullBlock;
     fullBlock.insert(fullBlock.end(), header.begin(), header.end());
     fullBlock.insert(fullBlock.end(), data.begin(), data.end());

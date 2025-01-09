@@ -5,7 +5,7 @@ AKNBlock::AKNBlock(unsigned char c, uint16_t i){
     this->blockNummer = i;
 }
 
-std::vector<unsigned char> AKNBlock::getFullAKNBlock(){
+std::vector<unsigned char> AKNBlock::getFullBlock(){
     std::vector<unsigned char> fullBlock;
     fullBlock.insert(fullBlock.end(), this->controlChar);
     fullBlock.insert(fullBlock.end(), (this->blockNummer >> 8) & 0xff);

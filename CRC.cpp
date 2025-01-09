@@ -42,6 +42,7 @@ bool CRC::verifyDataWithCRC(const std::vector<unsigned char>& dataWithCRC) {
     uint16_t crc = calculateCRC16(dataWithCRC);
     return (crc == 0);
 }
+
 std::vector<unsigned char> hexStringToByteVector(const std::string& hexString) {
     std::vector<unsigned char> result;
     for (size_t i = 0; i < hexString.length(); i += 2) {

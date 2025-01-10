@@ -28,15 +28,19 @@ void MainSender::writeToB15(int data) {
 
 void MainSender::sendAKN(){
     std::cerr << "send akn" << std::endl;
-    this->b15.setRegister(&PORTA, 2);
+    this->b15.setRegister(&PORTA, main_AKN);
 }
 
 void MainSender::sendNAKN(){
     std::cerr << "send nakn" << std::endl;
-    this->b15.setRegister(&PORTA, 1);
+    this->b15.setRegister(&PORTA, main_NAKN);
 }
 
 bool MainSender::checkAKN(){
-    bool isAKN = (this->b15.getRegister(&PINA) & 0b00100000);
+    bool isAKN = (this->b15.getRegister(&PINA) & side_AKN);
     return isAKN;
+}
+
+void MainSender::sendEndOfTransmitting(){
+    this->b15.setRegister(&PORTA, main_EOT);
 }

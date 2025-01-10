@@ -13,16 +13,16 @@ bool SideSender::waitForMainSender(){
 
 void SideSender::sendAKN(){
     std::cerr << "send akn" << std::endl;
-    this->b15.setRegister(&PORTA, 32);
+    this->b15.setRegister(&PORTA, side_AKN);
 }
 
 void SideSender::sendNAKN(){
     std::cerr << "send nakn" << std::endl;
-    this->b15.setRegister(&PORTA, 16);
+    this->b15.setRegister(&PORTA, side_NAKN);
 }
 
 bool SideSender::checkAKN(){
-    bool isAKN = ((this->b15.getRegister(&PINA) >> 1) & 0x01);
+    bool isAKN = (this->b15.getRegister(&PINA) & main_AKN);
     return isAKN;
 }
 
@@ -39,4 +39,8 @@ void SideSender::writeToB15(int data) {
     }
     this->b15.setRegister(&PORTA, data | 0b00000000);
     delay(50);
+}
+
+void SideSender::sendEndOfTransmitting(){
+    this->b15.setRegister(&PORTA, side_EOT);
 }

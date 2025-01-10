@@ -2,7 +2,6 @@
 #include "Sender.hpp"
 
 class MainSender : public Sender{
-
 public:
     MainSender(CRC);
     void sendStartOfTransmitting();
@@ -10,4 +9,5 @@ public:
     void sendAKN() override;
     void sendNAKN() override;
     bool checkAKN() override;
+    void sendEndOfTransmitting() override;
 };

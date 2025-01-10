@@ -15,7 +15,6 @@ uint16_t Sender::createDataBlocks(){
     uint16_t blockCounter = 0;
     char byte;
     while (std::cin.get(byte)) {
-        if (isControlCharacter(byte)) dataBuffer.push_back(static_cast<char>(ControlCharacter::ESC));
         dataBuffer.push_back(byte);
         if (dataBuffer.size() == DataBlock::MAX_LENGTH_DATA) { 
             addDataBlockToOutputBuffer(dataBuffer);
@@ -29,11 +28,6 @@ uint16_t Sender::createDataBlocks(){
     }
     std::cerr << "finished block creating" << std::endl;
     return blockCounter;
-}
-
-bool Sender::isControlCharacter(char c){
-    return  c == static_cast<char>(ControlCharacter::START) || c == static_cast<char>(ControlCharacter::END) ||
-            c == static_cast<char>(ControlCharacter::ESC);
 }
 
 void Sender::addDataBlockToOutputBuffer(std::vector<unsigned char> dataForBlock){
@@ -107,23 +101,6 @@ void Sender::saveCorrectData(std::vector<unsigned char> dataWithHeaderAndCRC){
     dataWithHeaderAndCRC.erase(dataWithHeaderAndCRC.begin(), dataWithHeaderAndCRC.begin() + 2);
     dataWithHeaderAndCRC.erase(dataWithHeaderAndCRC.end() - 2, dataWithHeaderAndCRC.end());
     this->correctlyRecievedData[blockNummer] = dataWithHeaderAndCRC;
-}
-
-void Sender::sendEndOfTransmitting(){
-    // 3 END-Zeichen hintereinander
-    const std::vector<unsigned char> EOT = {static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END), static_cast<unsigned char>(ControlCharacter::END)};
-    unsigned int bitStream = 0;
-    int bitCount = 0;
-    for (unsigned char currentChar : EOT) {
-        for (int j = 7; j >= 0; j--) {
-            bitStream = (bitStream << 1) | ((currentChar >> j) & 0x01);
-            bitCount++;
-            if (bitCount == 3) {
-                writeToB15(bitStream & 0x07);
-                bitCount = 0;
-            }
-        }
-    }
 }
 
 void Sender::delay(int delay_ms){

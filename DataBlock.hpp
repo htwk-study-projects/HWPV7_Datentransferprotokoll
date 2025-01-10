@@ -1,6 +1,5 @@
 #pragma once
 #include <vector>
-#include "ControlCharacter.hpp"
 #include "CRC.hpp"
 
 class DataBlock{

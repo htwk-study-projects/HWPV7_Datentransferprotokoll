@@ -94,12 +94,14 @@ bool Sender::verifyReadBlock() {
         bitCount -= 8;
     }
     streamToCharVector.pop_back();
-    if (this->USED_CRC_INSTANCE.verifyDataWithCRC(streamToCharVector)){
+    bool isCorrect = this->USED_CRC_INSTANCE.verifyDataWithCRC(streamToCharVector);
+    if (isCorrect){
         saveCorrectData(streamToCharVector);
     }
+    return isCorrect;
 }
 
-void Sender::saveCorrectData(std::vector<unsigned char> &dataWithHeaderAndCRC){
+void Sender::saveCorrectData(std::vector<unsigned char> dataWithHeaderAndCRC){
     uint16_t blockNummer = dataWithHeaderAndCRC.at(2);
     blockNummer = (blockNummer << 8) | dataWithHeaderAndCRC.at(3);
     std::vector<unsigned char> data;

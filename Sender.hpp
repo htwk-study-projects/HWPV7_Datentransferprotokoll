@@ -28,7 +28,7 @@ protected:
     void addDataBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);
     virtual void writeToB15(int) = 0;
     void sendBlock(DataBlock);
-    void saveCorrectData(std::vector<unsigned char>&);
+    void saveCorrectData(std::vector<unsigned char>);
 
 public:
 

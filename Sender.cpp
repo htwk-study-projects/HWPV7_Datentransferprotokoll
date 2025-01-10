@@ -93,7 +93,6 @@ bool Sender::verifyReadBlock() {
         streamToCharVector.push_back(static_cast<unsigned char>((bitStream >> (bitCount - 8)) & 0xff));
         bitCount -= 8;
     }
-    streamToCharVector.pop_back();
     bool isCorrect = this->USED_CRC_INSTANCE.verifyDataWithCRC(streamToCharVector);
     if (isCorrect){
         saveCorrectData(streamToCharVector);
@@ -102,10 +101,10 @@ bool Sender::verifyReadBlock() {
 }
 
 void Sender::saveCorrectData(std::vector<unsigned char> dataWithHeaderAndCRC){
-    uint16_t blockNummer = dataWithHeaderAndCRC.at(2);
-    blockNummer = (blockNummer << 8) | dataWithHeaderAndCRC.at(3);
+    uint16_t blockNummer = dataWithHeaderAndCRC.at(0);
+    blockNummer = (blockNummer << 8) | dataWithHeaderAndCRC.at(1);
     std::vector<unsigned char> data;
-    dataWithHeaderAndCRC.erase(dataWithHeaderAndCRC.begin(), dataWithHeaderAndCRC.begin() + 4);
+    dataWithHeaderAndCRC.erase(dataWithHeaderAndCRC.begin(), dataWithHeaderAndCRC.begin() + 2);
     dataWithHeaderAndCRC.erase(dataWithHeaderAndCRC.end() - 2, dataWithHeaderAndCRC.end());
     this->correctlyRecievedData[blockNummer] = dataWithHeaderAndCRC;
 }
@@ -133,5 +132,13 @@ void Sender::delay(int delay_ms){
     while (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() < delay_ms) {
         std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Kleine Schritte
         end = std::chrono::steady_clock::now();
+    }
+}
+
+void Sender::printReceivedData(){
+    for (const auto& pair : this->correctlyRecievedData) {
+        for(unsigned char c : pair.second ){
+            std::cout << c<< std::endl;
+        }
     }
 }

@@ -6,7 +6,7 @@
 class DataBlock{
 private:
     std::vector<unsigned char> header;
-     std::vector<unsigned char> data;
+    std::vector<unsigned char> data;
     std::vector<unsigned char> crcSum;
     uint16_t blockNummer;
     static uint16_t DATA_BLOCK_NUMMER;

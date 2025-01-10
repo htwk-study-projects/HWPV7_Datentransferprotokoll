@@ -40,7 +40,6 @@ std::vector<unsigned char> DataBlock::getFullBlock(){
     fullBlock.insert(fullBlock.end(), header.begin(), header.end());
     fullBlock.insert(fullBlock.end(), data.begin(), data.end());
     fullBlock.insert(fullBlock.end(), crcSum.begin(), crcSum.end());
-    fullBlock.insert(fullBlock.end(), static_cast<unsigned char>(ControlCharacter::END));  // End-Byte hinzufügen
     return fullBlock;
 }
 
@@ -50,8 +49,6 @@ uint16_t DataBlock::getBlockNummer() {
 
 std::vector<unsigned char> DataBlock::createHeader() {
     std::vector<unsigned char> headerForCurrentBlock;
-    headerForCurrentBlock.push_back(static_cast<unsigned char>(ControlCharacter::START));
-    headerForCurrentBlock.push_back(static_cast<unsigned char>(ControlCharacter::ESC));
     headerForCurrentBlock.push_back(((DATA_BLOCK_NUMMER >> 8) & 0xff));
     headerForCurrentBlock.push_back((DATA_BLOCK_NUMMER & 0xff));
     this->blockNummer = DATA_BLOCK_NUMMER;

@@ -38,6 +38,7 @@ public:
     void sendEndOfTransmitting();
     bool verifyReadBlock();
     void delay(int);
+    void printReceivedData();
 
     virtual void sendAKN() = 0;
     virtual void sendNAKN() = 0;

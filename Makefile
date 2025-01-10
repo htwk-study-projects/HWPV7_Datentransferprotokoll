@@ -9,7 +9,7 @@ COMPILER_PATH = g++
 # Options
 CFLAGS   = -std=c++17 -O3 -Wall -Wextra
 LDFLAGS  = -lb15fdrv
-OBJECTS  = b15fPC.o DataBlock.o CRC.o Sender.o Receiver.o AKNBlock.o
+OBJECTS  = b15fPC.o DataBlock.o CRC.o Sender.o MainSender.o SideSender.o
 OUT      = b15fPC.elf
 
 COMPILE = $(COMPILER_PATH) $(CFLAGS)

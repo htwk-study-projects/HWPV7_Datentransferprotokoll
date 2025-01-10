@@ -12,17 +12,17 @@ bool SideSender::waitForMainSender(){
 }
 
 void SideSender::sendAKN(){
+    std::cerr << "send akn" << std::endl;
     this->b15.setRegister(&PORTA, 32);
 }
 
 void SideSender::sendNAKN(){
+    std::cerr << "send nakn" << std::endl;
     this->b15.setRegister(&PORTA, 16);
 }
 
 bool SideSender::checkAKN(){
-    bool isAKN = (this->b15.getRegister(&PINA) & 0b00000010);
-    if(isAKN) return true;
-    bool isAKN = (this->b15.getRegister(&PINA) & 0b00000010);
+    bool isAKN = ((this->b15.getRegister(&PINA) >> 1) & 0x01);
     return isAKN;
 }
 
@@ -31,11 +31,12 @@ void SideSender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, (data << 4) | 0b10000000);
     std::bitset<3> a = data;
     std::cerr << a;
-    this->b15.delay_ms(5);
+    delay(50);
     uint8_t currentInput = this->b15.getRegister(&PINA);
-    if(currentInput & 0b10000000){
-        this->inputBuffer.push_back((currentInput & 0b00000111));
+    if(currentInput & 0b00001000){
+        this->inputBuffer.push_back((currentInput & 0x07));
+        std::cerr << std::bitset<3>((currentInput & 0x07));
     }
     this->b15.setRegister(&PORTA, data | 0b00000000);
-    this->b15.delay_ms(15);
+    delay(50);
 }

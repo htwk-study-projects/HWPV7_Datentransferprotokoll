@@ -5,11 +5,10 @@
 #include <map>
 #include <set>
 
-#include "Block.hpp"
 #include "DataBlock.hpp"
 #include "CRC.hpp"
 
-//#include <b15f/b15.h>
+//#include <b15f/b15f.h>
 
 class Sender{
 
@@ -28,17 +27,17 @@ protected:
     bool isControlCharacter(char c);
     void addDataBlockToOutputBuffer(std::vector<unsigned char> dataForBlock);
     virtual void writeToB15(int) = 0;
-    void sendBlock(Block);
+    void sendBlock(DataBlock);
     void saveCorrectData(std::vector<unsigned char>&);
 
 public:
 
-    Sender(CRC crc, bool){};
+    Sender(CRC crc, bool);
     uint16_t createDataBlocks();
     void sendDataBlock(uint16_t);
     void sendEndOfTransmitting();
     bool verifyReadBlock();
-    
+    void delay(int);
 
     virtual void sendAKN() = 0;
     virtual void sendNAKN() = 0;

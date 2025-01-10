@@ -1,6 +1,5 @@
 #include "Sender.hpp"
 #include "DataBlock.hpp"
-#include "AKNBlock.hpp"
 #include <iostream>
 
 Sender::Sender(CRC crc, bool isMain){
@@ -47,14 +46,14 @@ void Sender::addDataBlockToOutputBuffer(std::vector<unsigned char> dataForBlock)
 void Sender::sendDataBlock(uint16_t blockNumberToSend){
     std::cerr << "start sending" << std::endl;
     uint16_t currentBlockNumber = blockNumberToSend;
-    Block block = outputBuffer[currentBlockNumber];
+    DataBlock block = outputBuffer[currentBlockNumber];
     std::cerr << "send BLOCK " << currentBlockNumber << std::endl;
     sendBlock(block);
 
     std::cerr << "end sending" << std::endl;
 }
 
-void Sender::sendBlock(Block block){
+void Sender::sendBlock(DataBlock block){
     std::cerr << "sendData aufgerufen" << std::endl;
     unsigned int bitStream = 0;
     int bitCount = 0;
@@ -123,5 +122,14 @@ void Sender::sendEndOfTransmitting(){
                 bitCount = 0;
             }
         }
+    }
+}
+
+void Sender::delay(int delay_ms){
+    auto start = std::chrono::steady_clock::now();
+    auto end = start;
+    while (std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count() < delay_ms) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(1)); // Kleine Schritte
+        end = std::chrono::steady_clock::now();
     }
 }

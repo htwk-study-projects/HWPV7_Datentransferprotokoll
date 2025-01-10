@@ -2,9 +2,8 @@
 #include <vector>
 #include "ControlCharacter.hpp"
 #include "CRC.hpp"
-#include "Block.hpp"
 
-class DataBlock : public Block {
+class DataBlock{
 private:
     std::vector<unsigned char> header;
      std::vector<unsigned char> data;

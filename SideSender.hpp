@@ -10,4 +10,5 @@ public:
     bool checkAKN() override;
     void writeToB15(int) override;
     void sendEndOfTransmitting() override;
+    void sendNoEndOfTransmitting() override;
 };

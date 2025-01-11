@@ -24,12 +24,15 @@ int main(int argc, char* argv[]) {
             sender.sendDataBlock(currentBlock);
             if(!sender.verifyReadBlock()){
                 sender.sendNAKN();
-            }
-            sender.sendAKN();
-            sender.delay(10000);
+            }else sender.sendAKN();
+            sender.delay(5000);
             if(!sender.checkAKN()) currentBlock--;
-        }           
-        sender.sendEndOfTransmitting();
+            if(currentBlock + 1 == blocksToSend) sender.sendEndOfTransmitting();
+            else sender.sendNoEndOfTransmitting();
+            sender.delay(5000);
+        }
+        // nur lesen und wenn der andere auch EOT sendet ist übertragung fertig  
+       
     }
     else if(strcmp(argv[1], "-s") == 0){
         SideSender sender = SideSender(crcInstance);
@@ -39,12 +42,14 @@ int main(int argc, char* argv[]) {
             sender.sendDataBlock(currentBlock);
             if(!sender.verifyReadBlock()){
                 sender.sendNAKN();
-            }
-            sender.sendAKN();
-            sender.delay(10000);
+            }else sender.sendAKN();
+            sender.delay(5000);
             if(!sender.checkAKN()) currentBlock--;
+            if(currentBlock + 1 == blocksToSend) sender.sendEndOfTransmitting();
+            else sender.sendNoEndOfTransmitting();
+            sender.delay(5000);            
         }
-        sender.sendEndOfTransmitting();
+        // nur lesen und wenn der andere auch EOT sendet ist übertragung fertig 
 
     }
 

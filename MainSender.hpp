@@ -10,4 +10,5 @@ public:
     void sendNAKN() override;
     bool checkAKN() override;
     void sendEndOfTransmitting() override;
+    void sendNoEndOfTransmitting() override;
 };

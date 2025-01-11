@@ -44,3 +44,7 @@ void SideSender::writeToB15(int data) {
 void SideSender::sendEndOfTransmitting(){
     this->b15.setRegister(&PORTA, side_EOT);
 }
+
+void SideSender::sendNoEndOfTransmitting(){
+    this->b15.setRegister(&PORTA, 0);
+}

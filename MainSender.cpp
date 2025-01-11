@@ -44,3 +44,7 @@ bool MainSender::checkAKN(){
 void MainSender::sendEndOfTransmitting(){
     this->b15.setRegister(&PORTA, main_EOT);
 }
+
+void MainSender::sendNoEndOfTransmitting(){
+    this->b15.setRegister(&PORTA, 0);
+}

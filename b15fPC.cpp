@@ -18,38 +18,50 @@ int main(int argc, char* argv[]) {
 
     if(strcmp(argv[1], "-m") == 0){
         MainSender sender = MainSender(crcInstance);
+        uint16_t currentBlock = 0;
         uint16_t blocksToSend = sender.createDataBlocks();
+        std::vector<bool> blockReceived(blocksToSend, false); 
+
         sender.sendStartOfTransmitting();
-        for(uint16_t currentBlock = 0; currentBlock < blocksToSend; currentBlock++){
+        while(currentBlock < blocksToSend){
             sender.sendDataBlock(currentBlock);
             if(!sender.verifyReadBlock()){
                 sender.sendNAKN();
-            }else sender.sendAKN();
+            } 
+            else{
+                sender.sendAKN();
+                blockReceived[currentBlock] = true;
+            }
             sender.delay(5000);
-            if(!sender.checkAKN()) currentBlock--;
-            if(currentBlock + 1 == blocksToSend) sender.sendEndOfTransmitting();
-            else sender.sendNoEndOfTransmitting();
+            if(sender.checkAKN() && blockReceived[currentBlock]) currentBlock++;
             sender.delay(5000);
         }
-        // nur lesen und wenn der andere auch EOT sendet ist übertragung fertig  
+
+        sender.printReceivedData();
        
     }
     else if(strcmp(argv[1], "-s") == 0){
         SideSender sender = SideSender(crcInstance);
+        uint16_t currentBlock = 0;
         uint16_t blocksToSend = sender.createDataBlocks();
+        std::vector<bool> blockReceived(blocksToSend, false); 
+
         while(!sender.waitForMainSender()){}
-        for(uint16_t currentBlock = 0; currentBlock < blocksToSend; currentBlock++){
+        while(currentBlock < blocksToSend){
             sender.sendDataBlock(currentBlock);
             if(!sender.verifyReadBlock()){
                 sender.sendNAKN();
-            }else sender.sendAKN();
+            } 
+            else{
+                sender.sendAKN();
+                blockReceived[currentBlock] = true;
+            }
             sender.delay(5000);
-            if(!sender.checkAKN()) currentBlock--;
-            if(currentBlock + 1 == blocksToSend) sender.sendEndOfTransmitting();
-            else sender.sendNoEndOfTransmitting();
-            sender.delay(5000);            
+            if(sender.checkAKN() && blockReceived[currentBlock]) currentBlock++;
+            sender.delay(5000);           
         }
-        // nur lesen und wenn der andere auch EOT sendet ist übertragung fertig 
+
+        sender.printReceivedData();
 
     }
 

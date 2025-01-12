@@ -48,7 +48,5 @@ public:
     virtual void sendAKN() = 0;
     virtual void sendNAKN() = 0;
     virtual bool checkAKN() = 0;
-    virtual void sendEndOfTransmitting() = 0;
-    virtual void sendNoEndOfTransmitting() = 0;
 
 };

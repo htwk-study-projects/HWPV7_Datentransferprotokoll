@@ -40,11 +40,3 @@ void SideSender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, data | 0b00000000);
     delay(50);
 }
-
-void SideSender::sendEndOfTransmitting(){
-    this->b15.setRegister(&PORTA, side_EOT);
-}
-
-void SideSender::sendNoEndOfTransmitting(){
-    this->b15.setRegister(&PORTA, 0);
-}

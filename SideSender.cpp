@@ -29,8 +29,6 @@ bool SideSender::checkAKN(){
 void SideSender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, data);
     this->b15.setRegister(&PORTA, (data << 4) | 0b10000000);
-    std::bitset<3> a = data;
-    std::cerr << a;
     delay(50);
     uint8_t currentInput = this->b15.getRegister(&PINA);
     if(currentInput & 0b00001000){

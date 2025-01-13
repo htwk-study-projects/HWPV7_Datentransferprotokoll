@@ -1,5 +1,4 @@
 #include <iostream>
-//#include <b15f/b15f.h>
 #include <map>
 #include <vector>
 #include <set>
@@ -21,6 +20,7 @@ int main(int argc, char* argv[]) {
         uint16_t currentBlock = 0;
         uint16_t blocksToSend = sender.createDataBlocks();
         std::vector<bool> blockReceived(blocksToSend, false); 
+        std::vector<bool> blockSendedSuccessfully(blocksToSend, false); 
 
         sender.sendStartOfTransmitting();
         while(currentBlock < blocksToSend){
@@ -33,7 +33,8 @@ int main(int argc, char* argv[]) {
                 blockReceived[currentBlock] = true;
             }
             sender.delay(5000);
-            if(sender.checkAKN() && blockReceived[currentBlock]) currentBlock++;
+            if(sender.checkAKN()) blockSendedSuccessfully[currentBlock] = true;
+            if(blockSendedSuccessfully[currentBlock] && blockReceived[currentBlock]) currentBlock++;
             sender.delay(5000);
         }
 
@@ -45,6 +46,7 @@ int main(int argc, char* argv[]) {
         uint16_t currentBlock = 0;
         uint16_t blocksToSend = sender.createDataBlocks();
         std::vector<bool> blockReceived(blocksToSend, false); 
+        std::vector<bool> blockSendedSuccessfully(blocksToSend, false);
 
         while(!sender.waitForMainSender()){}
         while(currentBlock < blocksToSend){
@@ -57,7 +59,8 @@ int main(int argc, char* argv[]) {
                 blockReceived[currentBlock] = true;
             }
             sender.delay(5000);
-            if(sender.checkAKN() && blockReceived[currentBlock]) currentBlock++;
+            if(sender.checkAKN()) blockSendedSuccessfully[currentBlock] = true;
+            if(blockSendedSuccessfully[currentBlock] && blockReceived[currentBlock]) currentBlock++;
             sender.delay(5000);           
         }
 

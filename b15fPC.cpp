@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
             sender.delay(5000);
             if(sender.checkAKN()) blockSendedSuccessfully[currentBlock] = true;
             if(blockSendedSuccessfully[currentBlock] && blockReceived[currentBlock]) currentBlock++;
-            sender.delay(5000);
+            sender.delay(1000);
         }
 
         sender.printReceivedData();
@@ -60,8 +60,7 @@ int main(int argc, char* argv[]) {
             }
             sender.delay(5000);
             if(sender.checkAKN()) blockSendedSuccessfully[currentBlock] = true;
-            if(blockSendedSuccessfully[currentBlock] && blockReceived[currentBlock]) currentBlock++;
-            sender.delay(5000);           
+            if(blockSendedSuccessfully[currentBlock] && blockReceived[currentBlock]) currentBlock++;         
         }
 
         sender.printReceivedData();

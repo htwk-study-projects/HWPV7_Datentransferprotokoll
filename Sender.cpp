@@ -91,6 +91,7 @@ bool Sender::verifyReadBlock() {
     if (isCorrect){
         saveCorrectData(streamToCharVector);
     }
+    inputBuffer.clear();
     return isCorrect;
 }
 

@@ -14,14 +14,12 @@ void MainSender::sendStartOfTransmitting(){
 void MainSender::writeToB15(int data) {
     this->b15.setRegister(&PORTA, data);
     this->b15.setRegister(&PORTA, data | 0b00001000);
-    delay(50);
     uint8_t currentInput = this->b15.getRegister(&PINA);
     if(currentInput & 0b10000000){
         this->inputBuffer.push_back((currentInput >> 4) & 0x07);
         std::cerr<< std::bitset<3>((currentInput >> 4) & 0x07);
     }
     this->b15.setRegister(&PORTA, data | 0b00000000);
-    delay(50);
 }
 
 void MainSender::sendAKN(){

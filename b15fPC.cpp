@@ -21,9 +21,9 @@ int main(int argc, char* argv[]) {
         uint16_t blocksToSend = sender.createDataBlocks();
         std::vector<bool> blockReceived(blocksToSend, false); 
         std::vector<bool> blockSendedSuccessfully(blocksToSend, false); 
-
-        sender.sendStartOfTransmitting();
+        
         while(currentBlock < blocksToSend){
+            sender.sendStartOfTransmitting();
             sender.sendDataBlock(currentBlock);
             if(!sender.verifyReadBlock()){
                 sender.sendNAKN();
@@ -47,9 +47,9 @@ int main(int argc, char* argv[]) {
         uint16_t blocksToSend = sender.createDataBlocks();
         std::vector<bool> blockReceived(blocksToSend, false); 
         std::vector<bool> blockSendedSuccessfully(blocksToSend, false);
-
-        while(!sender.waitForMainSender()){}
+        
         while(currentBlock < blocksToSend){
+            while(!sender.waitForMainSender()){}
             sender.sendDataBlock(currentBlock);
             if(!sender.verifyReadBlock()){
                 sender.sendNAKN();

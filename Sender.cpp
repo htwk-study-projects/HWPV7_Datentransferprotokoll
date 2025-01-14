@@ -116,7 +116,7 @@ void Sender::delay(int delay_ms){
 void Sender::printReceivedData(){
     for (const auto& pair : this->correctlyRecievedData) {
         for(unsigned char c : pair.second ){
-            std::cout << c<< std::endl;
+            std::cout << c;
         }
     }
 }

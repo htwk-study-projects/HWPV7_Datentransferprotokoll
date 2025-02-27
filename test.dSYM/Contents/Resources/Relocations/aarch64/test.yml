@@ -1,5 +1,0 @@
----
-triple:          'arm64-apple-darwin'
-binary-path:     '/Users/lucasstramke/git/HWPV7_Datentransferprotokoll/test'
-relocations:     []
-...

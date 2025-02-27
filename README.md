@@ -1,7 +1,7 @@
 # HWPV7 Datentransferprotokoll
 
 ## Überblick
-HWPV7 ist ein spezialisiertes Datentransferprotokoll für die Kommunikation zwischen zwei Computern über B15 Boards.
+Das ist ein spezialisiertes Datentransferprotokoll für die Kommunikation zwischen zwei Computern über B15 Boards.
 
 ## Verwendete Programmiersprache
 C++
@@ -38,7 +38,7 @@ Das Protokoll basiert auf einer **quasi Master-Slave Beziehung**:
 # HWPV7 Data Transfer Protocol
 
 ## Overview
-HWPV7 is a specialized data transfer protocol for communication between two computers via B15 boards.
+This is a specialized data transfer protocol for communication between two computers via B15 boards.
 
 ## Programming Language
 C++
